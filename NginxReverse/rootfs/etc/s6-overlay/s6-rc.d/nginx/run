@@ -49,8 +49,8 @@ fi
 if bashio::config.has_value 'upstream_server'; then
     bashio::log.info "upstream.server $(bashio::config 'upstream_server')"
     bashio::log.info "upstream.port $(bashio::config 'upstream_port')"
-	echo "upstream backend {server $(bashio::config 'upstream_server'):$(bashio::config 'upstream_port');}" > /config/includes/upstream.conf
-    bashio::log.info  "/config/includes/upstream.conf: "$(cat /config/includes/upstream.conf )""
+    echo "upstream backend {server $(bashio::config 'upstream_server'):$(bashio::config 'upstream_port');}" > /etc/nginx/includes/upstream.conf
+    bashio::log.info  "/etc/nginx/includes/upstream.conf: "$(cat /etc/nginx/includes/upstream.conf )""
 fi
 
 
