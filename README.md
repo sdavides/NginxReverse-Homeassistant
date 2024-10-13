@@ -16,6 +16,7 @@ Add custom component remote repository:
 
   * Upstream server ( example modem "192.168.1.1" )
   * Upstream port (example "80")
+  * Upstream http ( "http" or "https" )
   * basic_authentication (not required)
       * ( if backend require basic authentication [popup])
   * SSL (not required)
