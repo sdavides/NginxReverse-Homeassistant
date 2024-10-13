@@ -1,0 +1,6 @@
+{
+  "name": "NginxReverse",
+  "udev": true,
+  "url": "https://github.com/sdavides/NginxReverse-Homeassistant",
+  "maintainer": "sdavides"
+}
