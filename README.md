@@ -17,8 +17,9 @@ Add custom component remote repository:
   * Upstream server ( example modem "192.168.1.1" )
   * Upstream port (example "80")
   * Upstream http ( "http" or "https" )
+  * Upstream document root (not required default=blank)
   * basic_authentication (not required)
-      * ( if backend require basic authentication [popup])
+      * ( if backend require basic authentication (popup) ) 
   * SSL (not required)
       * certificate for NGiNX container
   * Internal port for NGiNX container
