@@ -21,4 +21,8 @@ Add custom component remote repository:
   * SSL (not required)
       * certificate for NGiNX container
   * Internal port for NGiNX container
-    
+
+
+## Add panel
+![immagine](https://github.com/user-attachments/assets/c37d7568-1921-47c2-b3e4-3b7fc9400987)
+
