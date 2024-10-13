@@ -28,3 +28,6 @@ Add custom component remote repository:
 ## Add panel
 ![immagine](https://github.com/user-attachments/assets/c37d7568-1921-47c2-b3e4-3b7fc9400987)
 
+## Example
+![immagine](https://github.com/user-attachments/assets/16b00f62-9e0a-4461-8d2a-95f4acc93722)
+
