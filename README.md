@@ -31,6 +31,15 @@ Add custom component remote repository:
   * leave_front_door_open 
 	( disable authentication HA )
 
+## Advanced Setting
+
+  * edit files "/addon_configs/e0ed675c_nginx_reverse/"
+  * restart add-on
+
+restore config
+  * delete file, restart add-on 
+
+
 
 ## Add panel
 ![immagine](https://github.com/user-attachments/assets/c37d7568-1921-47c2-b3e4-3b7fc9400987)
