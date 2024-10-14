@@ -1,8 +1,10 @@
 # NginxReverse addon HomeAssistant
 
-  Nginx reverse proxy into Home Assistant panel
+  Nginx reverse proxy into Home Assistant
+  or external port
 
-  *Nginx reverse proxy container add-on for HomeAssistant*
+  *Reverse Proxy NGINX authentication HA*
+  
 
   ## Installation
 
@@ -20,9 +22,14 @@ Add custom component remote repository:
   * Upstream document root (not required default=blank)
   * basic_authentication (not required)
       * ( if backend require basic authentication (popup) ) 
+
   * SSL (not required)
       * certificate for NGiNX container
-  * Internal port for NGiNX container
+	( https://<homeassistant>:1890/ )
+  * Port for NGiNX container 
+	(default 1890)
+  * leave_front_door_open 
+	( disable authentication HA )
 
 
 ## Add panel
