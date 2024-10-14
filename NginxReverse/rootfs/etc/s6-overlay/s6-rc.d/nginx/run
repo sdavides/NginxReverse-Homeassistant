@@ -1,0 +1,112 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# NGINX Reverse Proxy
+# reverse proxy page into Home Assistant
+# https://github.com/sdavides/NGINXReverse-Homeassistant
+# ==============================================================================
+
+bashio::log.info "Starting NGinx..."
+
+
+mkdir /config/includes/ && bashio::log.info "includes/ create ok..." || bashio::log.info "includes/ already exist"
+
+
+if  bashio::fs.file_exists '/config/nginx.conf'; then
+    bashio::log.info "nginx.conf already exist"
+else
+        cp -a /etc/nginx/nginx.conf /config/ && bashio::log.info "create nginx.conf default"|| bashio::log.info "nginx.conf error config..."
+fi
+
+if  bashio::fs.file_exists '/config/includes/ssl_params.conf'; then
+    bashio::log.info "/config/includes/ssl_params.conf already exist"
+else
+        cp -a /etc/nginx/includes/ssl_params.conf /config/includes/ && bashio::log.info "create includes/ssl_params.conf default"|| bashio::log.info "includes/ssl_params.conf error config..."
+fi
+
+
+if  bashio::fs.file_exists '/config/includes/server_params.conf'; then
+    bashio::log.info "/config/includes/server_params.conf already exist"
+else
+        cp -a /etc/nginx/includes/server_params.conf /config/includes/ && bashio::log.info "create includes/server_params.conf default"|| bashio::log.info "includes/server_params.conf error config..."
+fi
+
+if  bashio::fs.file_exists '/config/includes/proxy_params.conf'; then
+    bashio::log.info "/config/includes/proxy_params.conf already exist"
+else
+        cp -a /etc/nginx/includes/proxy_params.conf /config/includes/ && bashio::log.info "create includes/proxy_params.conf default"|| bashio::log.info "includes/proxy_params.conf error config..."
+fi
+
+if  bashio::fs.file_exists '/config/includes/location_params.conf'; then
+    bashio::log.info "/config/includes/location_params.conf already exist"
+else
+        cp -a /etc/nginx/includes/location_params.conf /config/includes/ && bashio::log.info "create includes/location_params.conf default"|| bashio::log.info "includes/location_params.conf error config..."
+fi
+
+
+if  bashio::fs.file_exists '/config/includes/mime.types'; then
+    bashio::log.info "/config/includes/mime.types already exist"
+else
+        cp -a /etc/nginx/includes/mime.types /config/includes/ && bashio::log.info "create includes/mime.types default"|| bashio::log.info "includes/mime.types error config..."
+fi
+
+
+if bashio::config.has_value 'upstream_server'; then
+    bashio::log.info "upstream.server $(bashio::config 'upstream_server')"
+    bashio::log.info "upstream.port $(bashio::config 'upstream_port')"
+    echo "upstream backend {server $(bashio::config 'upstream_server'):$(bashio::config 'upstream_port');}" > /etc/nginx/includes/upstream.conf
+    bashio::log.info  "/etc/nginx/includes/upstream.conf: "$(cat /etc/nginx/includes/upstream.conf )""
+fi
+
+
+
+if bashio::config.has_value 'upstream_http'; then
+http=$(bashio::config 'upstream_http')
+bashio::log.info "Insert http or https: $http"
+sed -i "s/http:\/\/backend/$http:\/\/backend/g" /etc/nginx/servers/ingress.conf || bashio::log.info "error http prot ingress.conf"
+fi
+
+if bashio::config.has_value 'upstream_documentroot'; then
+http=$(bashio::config 'upstream_http')
+documentroot=$(bashio::config 'upstream_documentroot')
+bashio::log.info "Insert document root: $documentroot"
+sed -i "s/$http:\/\/backend/$http:\/\/backend\\$documentroot/g" /etc/nginx/servers/ingress.conf || bashio::log.info "error document root ingress.conf"
+fi
+	
+if bashio::config.has_value 'upstream_http'; then
+http=$(bashio::config 'upstream_http')
+sed -i "s/http:\/\/backend/$http:\/\/backend/g" /etc/nginx/servers/direct.conf || bashio::log.info "error http prot direct.conf"
+fi
+
+if bashio::config.has_value 'upstream_documentroot'; then
+http=$(bashio::config 'upstream_http')
+documentroot=$(bashio::config 'upstream_documentroot')
+sed -i "s/$http:\/\/backend/$http:\/\/backend\\$documentroot/g" /etc/nginx/servers/direct.conf || bashio::log.info "error document root direct.conf"
+fi
+	
+	
+	
+	
+# Install user basic_authentication for backend
+sed -i '/'proxy_set_header\ Authorization\ \"Basic'/d' /config/includes/proxy_params.conf
+if bashio::config.has_value 'basic_authentication.username'; then
+    bashio::log.info "username $(bashio::config 'basic_authentication.username')"
+    bashio::log.info "password $(bashio::config 'basic_authentication.password')"
+	base64="$(echo -n "$(bashio::config 'basic_authentication.username')"":""$(bashio::config 'basic_authentication.password')" | base64 )"
+	bashio::log.info "base64 $base64"
+	
+	header="$(echo 'proxy_set_header Authorization "Basic '$base64'"')"
+	bashio::log.info "$header"
+	sed -i '/'proxy_set_header\ Authorization\ \"Basic'/d' /config/includes/proxy_params.conf
+	echo "$header" ";" >> /config/includes/proxy_params.conf && bashio::log.info "proxy_set_header insert includes/proxy_params.conf" || bashio::log.info "error include proxy_set_header Authorization"
+fi
+
+
+
+cp -a /config/includes/ /etc/nginx/ && bashio::log.info "update include conf ok" || bashio::log.info "..."
+cp -a /config/nginx.conf /etc/nginx/ && bashio::log.info "update nginx.conf ok" || bashio::log.info "..."
+
+
+
+
+exec nginx && bashio::log.info "NGinx started..." || bashio::log.info "NGinx started error"
