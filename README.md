@@ -23,11 +23,15 @@ Add custom component remote repository:
   * basic_authentication (not required)
       * ( if backend require basic authentication (popup) ) 
 
+
+* External port nginx:
+  
   * SSL (not required)
       * certificate for NGiNX container
 	( https://%homeassistant%:1890/ )
   * Port for NGiNX container 
 	(default 1890)
+        Disable port set "" 
   * leave_front_door_open 
 	( disable authentication HA )
 
