@@ -10,5 +10,10 @@ server {
 
         proxy_pass http://backend;
 	include /etc/nginx/includes/location_params.conf;
+# fix resource path relative
+sub_filter 'src="/' 'src="$http_referer';
+sub_filter 'href="/' 'href="$http_referer';
+sub_filter 'href="' 'href="$http_referer';
+
     }
 }
