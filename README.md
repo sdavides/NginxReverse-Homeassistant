@@ -30,7 +30,6 @@ Add custom component remote repository:
       * certificate for NGiNX container
 	( https://%homeassistant%:1890/ )
   * Port for NGiNX container 
-	(default 1890)
         Disable port set "" 
   * leave_front_door_open 
 	( disable authentication HA )
