@@ -38,5 +38,6 @@ server {
 
         proxy_pass http://backend;
 	include /etc/nginx/includes/location_params.conf;
+	include /etc/nginx/includes/location_params_direct.conf;
     }
 }
