@@ -16,5 +16,6 @@ sub_filter 'href="/' 'href="$http_referer';
 sub_filter 'href="' 'href="$http_referer';
 sub_filter 'action="/' 'href="$http_referer';
 sub_filter 'action="' 'href="$http_referer';
+sub_filter_once on;
     }
 }
