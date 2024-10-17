@@ -40,7 +40,7 @@ Add custom component remote repository:
   * restart add-on
 
 restore config
-  * delete file, restart add-on 
+  * delete file folder "/addon_configs/e0ed675c_nginx_reverse/", restart add-on 
 
 
 
