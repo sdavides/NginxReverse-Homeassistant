@@ -14,6 +14,6 @@ server {
 sub_filter 'src="/' 'src="$http_referer';
 sub_filter 'href="/' 'href="$http_referer';
 sub_filter 'href="' 'href="$http_referer';
-sub_filter 'action="' 'href="$http_referer';
+sub_filter 'action="/' 'href="$http_referer';
     }
 }
