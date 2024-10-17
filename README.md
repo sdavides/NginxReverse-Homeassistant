@@ -3,7 +3,9 @@
   Nginx reverse proxy into Home Assistant
   or external port
 
-  *Reverse Proxy NGINX with authentication HA*
+  	*Reverse Proxy NGINX from hassio*
+  
+  	*Reverse Proxy NGINX external with authentication HA*
   
 
   ## Installation
