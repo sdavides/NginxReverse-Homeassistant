@@ -16,7 +16,7 @@ arch:
   - amd64
   - armv7
 ports:
-  80/tcp: 1890
+  80/tcp: ""
 ports_description:
   80/tcp: Nginx local port
 hassio_api: true
