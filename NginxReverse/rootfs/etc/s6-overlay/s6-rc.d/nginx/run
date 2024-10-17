@@ -50,6 +50,19 @@ else
         cp -a /etc/nginx/includes/mime.types /config/includes/ && bashio::log.info "create includes/mime.types default"|| bashio::log.info "includes/mime.types error config..."
 fi
 
+if  bashio::fs.file_exists '/config/includes/location_params_ingress.conf'; then
+    bashio::log.info "/config/includes/location_params_ingress.conf already exist"
+else
+        cp -a /etc/nginx/includes/location_params_ingress.conf /config/includes/ && bashio::log.info "create includes/location_params_ingress.conf default"|| bashio::log.info "includes/location_params_ingress.conf error config..."
+fi
+
+
+if  bashio::fs.file_exists '/config/includes/location_params_direct.conf'; then
+    bashio::log.info "/config/includes/location_params_direct.conf already exist"
+else
+        cp -a /etc/nginx/includes/location_params_direct.conf /config/includes/ && bashio::log.info "create includes/location_params_direct.conf default"|| bashio::log.info "includes/location_params_direct.conf error config..."
+fi
+
 
 if bashio::config.has_value 'upstream_server'; then
     bashio::log.info "upstream.server $(bashio::config 'upstream_server')"
