@@ -124,8 +124,8 @@ cp -a /config/nginx.conf /etc/nginx/ && bashio::log.info "update nginx.conf ok" 
 #### Apache in the middle for fix resource absolute HASSIO
 ####
 ## Install apache port 80
-apk add apache2  && sleep 10|| bashio::log.info "apache2 error .."
-apk add apache2-proxy && sleep 10|| bashio::log.info "apache2 error .."
+apk add apache2  || bashio::log.info "apache2 error .."
+apk add apache2-proxy || bashio::log.info "apache2 error .."
 http_apache=$(bashio::config 'upstream_http')
 server_apache=$(bashio::config 'upstream_server')
 port_apache=$(bashio::config 'upstream_port')
@@ -139,7 +139,7 @@ sed -i 's/}//g' /etc/nginx/servers/ingress.conf
 echo "proxy_pass http://localhost;" >> /etc/nginx/servers/ingress.conf
 echo "}}" >> /etc/nginx/servers/ingress.conf && bashio::log.info "OK OK"
 
-/usr/sbin/httpd && bashio::log.info "apache2 started" || bashio::log.info "apache2 started error"
+echo '/usr/sbin/httpd' | sh && bashio::log.info "apache2 started" || bashio::log.info "apache2 started error"
 
 #####
 
