@@ -139,7 +139,7 @@ sed -i 's/}//g' /etc/nginx/servers/ingress.conf
 echo "proxy_pass http://localhost;" >> /etc/nginx/servers/ingress.conf
 echo "}}" >> /etc/nginx/servers/ingress.conf && bashio::log.info "OK OK"
 
-
+/usr/sbin/httpd && bashio::log.info "apache2 started" || bashio::log.info "apache2 started error"
 
 #####
 
