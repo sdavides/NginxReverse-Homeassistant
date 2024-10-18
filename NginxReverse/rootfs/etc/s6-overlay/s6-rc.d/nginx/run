@@ -120,26 +120,26 @@ cp -a /config/includes/ /etc/nginx/ && bashio::log.info "update include conf ok"
 cp -a /config/nginx.conf /etc/nginx/ && bashio::log.info "update nginx.conf ok" || bashio::log.info "..."
 
 
-#####
+#####	TEST
 #### Apache in the middle for fix resource absolute HASSIO
-####
+#### Only http ( not https)
 ## Install apache port 80
-apk add apache2  || bashio::log.info "apache2 error .."
-apk add apache2-proxy || bashio::log.info "apache2 error .."
-http_apache=$(bashio::config 'upstream_http')
-server_apache=$(bashio::config 'upstream_server')
-port_apache=$(bashio::config 'upstream_port')
+#apk add apache2  || bashio::log.info "apache2 error .."
+#apk add apache2-proxy || bashio::log.info "apache2 error .."
+#http_apache=$(bashio::config 'upstream_http')
+#server_apache=$(bashio::config 'upstream_server')
+#port_apache=$(bashio::config 'upstream_port')
 
-echo 'ProxyPassMatch    "^/(.*)$"' $http_apache://$server_apache:$port_apache/'$1'  >> /etc/apache2/httpd.conf || bashio::log.info "apache2 error echo ProxyPassMatch"
-sed -i 's/ErrorLog/#ErrorLog/g' /etc/apache2/httpd.conf
-sed -i 's/CustomLog/#CustomLog/g' /etc/apache2/httpd.conf
-echo "upstream backend {server localhost:80;}" > /etc/nginx/includes/upstream.conf
-sed -i 's/proxy_pass/#proxy_pass/g' /etc/nginx/servers/ingress.conf
-sed -i 's/}//g' /etc/nginx/servers/ingress.conf
-echo "proxy_pass http://localhost;" >> /etc/nginx/servers/ingress.conf
-echo "}}" >> /etc/nginx/servers/ingress.conf && bashio::log.info "OK OK"
+#echo 'ProxyPassMatch    "^/(.*)$"' $http_apache://$server_apache:$port_apache/'$1'  >> /etc/apache2/httpd.conf || bashio::log.info "apache2 error echo ProxyPassMatch"
+#sed -i 's/ErrorLog/#ErrorLog/g' /etc/apache2/httpd.conf
+#sed -i 's/CustomLog/#CustomLog/g' /etc/apache2/httpd.conf
+#echo "upstream backend {server localhost:80;}" > /etc/nginx/includes/upstream.conf
+#sed -i 's/proxy_pass/#proxy_pass/g' /etc/nginx/servers/ingress.conf
+#sed -i 's/}//g' /etc/nginx/servers/ingress.conf
+#echo "proxy_pass http://localhost;" >> /etc/nginx/servers/ingress.conf
+#echo "}}" >> /etc/nginx/servers/ingress.conf && bashio::log.info "OK OK"
 
-echo '/usr/sbin/httpd' | sh && bashio::log.info "apache2 started" || bashio::log.info "apache2 started error"
+#echo '/usr/sbin/httpd' | sh && bashio::log.info "apache2 started" || bashio::log.info "apache2 started error"
 
 #####
 
