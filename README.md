@@ -28,7 +28,7 @@ Add custom component remote repository:
 
 * External port nginx:
   
-  * SSL (not required)
+  * SSL ( required for backend https )
       * certificate for NGiNX container
 	( https://%homeassistant%:1890/ )
   * Port for NGiNX container 
@@ -36,6 +36,9 @@ Add custom component remote repository:
   * leave_front_door_open 
 	( disable authentication HA )
 
+* Apache:
+  * Add apache-proxy before backend ( if you have problem )
+	
 ## Advanced Setting
 
   * edit files "/addon_configs/e0ed675c_nginx_reverse/"
