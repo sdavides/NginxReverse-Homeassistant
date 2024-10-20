@@ -18,7 +18,7 @@ arch:
 ports:
   80/tcp: 
 ports_description:
-  80/tcp: Nginx local port
+  80/tcp: Nginx port ext
 hassio_api: true
 hassio_role: manager
 homeassistant_api: true
@@ -55,5 +55,5 @@ schema:
   certfile: str
   keyfile: str
   leave_front_door_open: bool?
-
+  apache: bool?
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
