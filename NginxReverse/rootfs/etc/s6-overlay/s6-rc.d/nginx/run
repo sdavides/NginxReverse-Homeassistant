@@ -8,7 +8,7 @@
 
 bashio::log.info "Starting NGinx..."
 
-if  bashio::fs.file_exists '/config/nginx/includes/nginx.conf'; then
+if  bashio::fs.file_exists '/config/nginx/nginx.conf'; then
     bashio::log.info "nginx.conf already exist"
 else
 	mkdir /config/nginx/ && mkdir /config/nginx/includes/ && bashio::log.info "nginx/includes/ create ok..." || bashio::log.info "nginx/includes/ already exist"
