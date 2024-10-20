@@ -8,13 +8,10 @@
 
 bashio::log.info "Starting NGinx..."
 
-
-mkdir /config/nginx/ && mkdir /config/nginx/includes/ && bashio::log.info "nginx/includes/ create ok..." || bashio::log.info "nginx/includes/ already exist"
-
-
 if  bashio::fs.file_exists '/config/nginx/includes/nginx.conf'; then
     bashio::log.info "nginx.conf already exist"
 else
+	mkdir /config/nginx/ && mkdir /config/nginx/includes/ && bashio::log.info "nginx/includes/ create ok..." || bashio::log.info "nginx/includes/ already exist"
         cp -ar /etc/nginx/* /config/nginx/ && rm -rf /config/nginx/templates && bashio::log.info "create nginx conf default"|| bashio::log.info "nginx.conf error config..."
 	
 fi
