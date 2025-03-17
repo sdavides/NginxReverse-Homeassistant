@@ -15,7 +15,7 @@ RUN \
         linux-headers=6.6-r1 \
     \
     && apk add --no-cache \
-        nginx=1.26.2-r4 \
+        nginx=1.26.3-r0 \
         openssh-client=9.9_p2-r0 \
         patch=2.7.6-r10 \
     \
