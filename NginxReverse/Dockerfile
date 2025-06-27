@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:17.2.5
+ARG BUILD_FROM=ghcr.io/hassio-addons/base:18.0.0
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -12,12 +12,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN \
     apk add --no-cache --virtual .build-dependencies \
         build-base=0.5-r3 \
-        linux-headers=6.6-r1 \
+        linux-headers=6.14.2-r0 \
     \
     && apk add --no-cache \
-        nginx=1.26.3-r0 \
-        openssh-client=9.9_p2-r0 \
-        patch=2.7.6-r10 \
+        nginx=1.28.0-r3 \
+        openssh-client=10.0_p1-r7 \
+        patch=2.8-r0 \
     \
     && apk del --no-cache --purge .build-dependencies \
     && rm -fr \
