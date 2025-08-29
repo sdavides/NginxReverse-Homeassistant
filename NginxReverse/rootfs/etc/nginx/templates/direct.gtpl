@@ -27,7 +27,6 @@ server {
 
     location /endpoint/ {
         proxy_pass http://backend;
-	include /etc/nginx/includes/location_params.conf;
     }
 
     location / {
@@ -37,7 +36,5 @@ server {
         {{ end }}
 
         proxy_pass http://backend;
-	include /etc/nginx/includes/location_params.conf;
-	include /etc/nginx/includes/location_params_direct.conf;
     }
 }
