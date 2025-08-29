@@ -1,68 +1,56 @@
 #!/command/with-contenv bashio
-# shellcheck shell=bash
 # ==============================================================================
-# NGINX Reverse Proxy
-# reverse proxy page into Home Assistant
-# https://github.com/sdavides/NGINXReverse-Homeassistant
+# Home Assistant Community Add-on: Node-RED
+# Runs the Nginx daemon
 # ==============================================================================
-
-bashio::log.info "Starting NGinx..."
-
-if  bashio::fs.file_exists '/config/nginx/nginx.conf'; then
-    bashio::log.info "nginx.conf already exist"
-else
-	mkdir /config/nginx/ && mkdir /config/nginx/includes/ && bashio::log.info "nginx/includes/ create ok..." || bashio::log.info "nginx/includes/ already exist"
-        cp -ar /etc/nginx/* /config/nginx/ && rm -rf /config/nginx/templates && bashio::log.info "create nginx conf default"|| bashio::log.info "nginx.conf error config..."
-	
-fi
 
 
 if bashio::config.has_value 'upstream_server'; then
+	bashio::log.info "......"
     bashio::log.info "upstream.server $(bashio::config 'upstream_server')"
     bashio::log.info "upstream.port $(bashio::config 'upstream_port')"
-    echo "upstream backend {server $(bashio::config 'upstream_server'):$(bashio::config 'upstream_port');}" > /config/nginx/includes/upstream.conf
-    bashio::log.info  "/config/nginx/includes/upstream.conf: "$(cat /config/nginx/includes/upstream.conf )""
+	bashio::log.info "......"
+    echo "upstream backend {server $(bashio::config 'upstream_server'):$(bashio::config 'upstream_port');}" > /etc/nginx/includes/upstream.conf
+    bashio::log.info  "/etc/nginx/includes/upstream.conf: "$(cat /etc/nginx/includes/upstream.conf )""
 fi
-
 
 if bashio::config.has_value 'upstream_http'; then
 http=$(bashio::config 'upstream_http')
-bashio::log.info "Insert http or https: $http"
-sed -i "s/http:\/\/backend/$http:\/\/backend/g" /etc/nginx/servers/ingress.conf || bashio::log.info "error http prot ingress.conf"
-sed -i "s/http:\/\/backend/$http:\/\/backend/g" /etc/nginx/servers/direct.conf || bashio::log.info "error http prot direct.conf or not enable direct port"
+bashio::log.info "upstream http or https: select $http"
+sed -i "s/http:\/\/backend/$http:\/\/backend/g" /etc/nginx/servers/ingress.conf || bashio::log.info "error http ingress.conf"
+sed -i "s/http:\/\/backend/$http:\/\/backend/g" /etc/nginx/servers/direct.conf || bashio::log.info "error http direct.conf or not enable direct port"
 fi
 
-if bashio::config.has_value 'upstream_documentroot'; then
-documentroot=$(bashio::config 'upstream_documentroot')
-bashio::log.info "Insert document root: $documentroot"
-sed -i "s/$http:\/\/backend/$http:\/\/backend\\$documentroot/g" /etc/nginx/servers/ingress.conf || bashio::log.info "error document root ingress.conf"
-sed -i "s/$http:\/\/backend/$http:\/\/backend\\$documentroot/g" /etc/nginx/servers/direct.conf || bashio::log.info "error document root direct.conf"
-fi
-	
-	
-	
+bashio::log.info "......"
 	
 # Install user basic_authentication for backend
-sed -i '/'proxy_set_header\ Authorization\ \"Basic'/d' /config/nginx/includes/proxy_params.conf || bashio::log.info "error include proxy_set_header Authorization"
-if bashio::config.has_value 'basic_authentication.username'; then
-    bashio::log.info "username $(bashio::config 'basic_authentication.username')"
-    bashio::log.info "password $(bashio::config 'basic_authentication.password')"
-	base64="$(echo -n "$(bashio::config 'basic_authentication.username')"":""$(bashio::config 'basic_authentication.password')" | base64 )"
-	bashio::log.info "base64 $base64"
+username=$(bashio::config 'basic_authentication_username') || bashio::log.info "error basic_authentication ......."
 	
-	header="$(echo 'proxy_set_header Authorization "Basic '$base64'"')"
-	bashio::log.info "$header"
-	sed -i '/'proxy_set_header\ Authorization\ \"Basic'/d' /config/nginx/includes/proxy_params.conf || bashio::log.info "error include proxy_set_header Authorization"
-	echo "$header" ";" >> /config/nginx/includes/proxy_params.conf && bashio::log.info "proxy_set_header insert includes/proxy_params.conf" || bashio::log.info "error include proxy_set_header Authorization"
+    if [ "$username" = "" ]; then	
+	    bashio::log.info "basic_authentication upstream not set"
+	else
+		bashio::log.info "basic_authentication upstream enable ......"
+
+    sed -i '/'proxy_set_header\ Authorization\ \"Basic'/d' /etc/nginx/includes/proxy_params.conf || bashio::log.info "error include proxy_set_header Authorization"
+        bashio::log.info "basic_authentication upstream username $(bashio::config 'basic_authentication_username')"
+        bashio::log.info "basic_authentication upstream password $(bashio::config 'basic_authentication_password')"
+    	base64="$(echo -n "$(bashio::config 'basic_authentication_username')"":""$(bashio::config 'basic_authentication_password')" | base64 )"
+    	bashio::log.info "basic_authentication upstream base64 $base64"
+    	
+    	header="$(echo 'proxy_set_header Authorization "Basic '$base64'"')"
+
+    	sed -i '/'proxy_set_header\ Authorization\ \"Basic'/d' /etc/nginx/includes/proxy_params.conf || bashio::log.info "error include proxy_set_header Authorization"
+    	echo "$header" ";" >> /etc/nginx/includes/proxy_params.conf && bashio::log.info "proxy_set_header insert includes/proxy_params.conf" || bashio::log.info "error include proxy_set_header Authorization"
+
+		cat /etc/nginx/includes/proxy_params.conf | grep Authorization
+
+		bashio::log.info "......"
 fi
 
-
-
 ### If the apache is enabled
-
 if bashio::config.true "apache"; then
-bashio::log.info "###"
-bashio::log.info "Apache2 before backend enable, http 2080 or https 2443 ..."
+bashio::log.info "Apache2 before upstream enable"
+bashio::log.info "Set Apache2 http 2080 or https 2443 port..."
 
 ## Install apache in the middle port 2080 ssl 2443
 apk add apache2  || bashio::log.info "apache2 error .." 
@@ -70,59 +58,86 @@ apk add apache2-proxy || bashio::log.info "apache2-proxy error .."
 apk add libcrypto3 || bashio::log.info "apache2-libcrypto3 error .."
 apk add libssl3 || bashio::log.info "apache2-libssl3 error .."
 apk add apache2-ssl || bashio::log.info "apache2-ssl error .." 
+
+bashio::log.info "Apache install OK"
+
+sed -i '/12\.34\.56\.78/d' /etc/apache2/httpd.conf
 sed -i 's/80/2080/g' /etc/apache2/httpd.conf
 sed -i 's/443/2443/g' /etc/apache2/conf.d/ssl.conf 
-echo "SSLProxyEngine on" >> /etc/apache2/httpd.conf || bashio::log.info ""
-echo "SSLProxyVerify off" >> /etc/apache2/httpd.conf || bashio::log.info ""
-echo "SSLProxyCheckPeerCN off" >> /etc/apache2/httpd.conf || bashio::log.info ""
-echo "SSLProxyCheckPeerName off" >> /etc/apache2/httpd.conf || bashio::log.info ""
 
-http_apache_upstream=$(bashio::config 'upstream_http')
-server_apache_upstream=$(bashio::config 'upstream_server')
-port_apache_upstream=$(bashio::config 'upstream_port')
+upstream_http=$(bashio::config 'upstream_http')
+upstream_server=$(bashio::config 'upstream_server')
+upstream_port=$(bashio::config 'upstream_port')
 
-echo 'ProxyPassMatch    "^/(.*)$"' $http_apache_upstream://$server_apache_upstream:$port_apache_upstream/'$1'  >> /etc/apache2/httpd.conf || bashio::log.info "apache2 error echo ProxyPassMatch"
+bashio::log.info "Set Apache proxy upstream..."
+echo 'ProxyPassMatch    "^/(.*)$"' $upstream_http://$upstream_server:$upstream_port/'$1'  >> /etc/apache2/httpd.conf || bashio::log.info "apache2 error echo ProxyPassMatch"
+cat /etc/apache2/httpd.conf | grep ProxyPassMatch
 
 sed -i 's/ErrorLog/#ErrorLog/g' /etc/apache2/httpd.conf || bashio::log.info ""
 sed -i 's/CustomLog/#CustomLog/g' /etc/apache2/httpd.conf || bashio::log.info ""
 sed -i 's/TransferLog/#TransferLog/g' /etc/apache2/conf.d/ssl.conf || bashio::log.info ""
 sed -i 's/CustomLog/#CustomLog/g' /etc/apache2/conf.d/ssl.conf  || bashio::log.info ""
-echo "upstream backend {server 127.0.0.1:2080;}" > /config/nginx/includes/upstream.conf && bashio::log.info "Apache install OK"
+bashio::log.info "Set new backend NGINX -> Apache"
+echo "upstream backend {server 127.0.0.1:2080;}" > /etc/nginx/includes/upstream.conf || bashio::log.info "Error upstream backend NGINX -> APACHE"
+cat /etc/nginx/includes/upstream.conf
 
 # If the ssl is enabled
 if bashio::config.true "ssl"; then
+	bashio::log.info "SSL enable"
+    echo "proxy_ssl_verify off;" >> /etc/nginx/includes/server_params.conf || bashio::log.info ""
+	sed -i 's/http:\/\//https:\/\//g' /etc/nginx/servers/ingress.conf || bashio::log.info ""
+	sed -i 's/http:\/\//https:\/\//g' /etc/nginx/servers/direct.conf || bashio::log.info "error http prot direct.conf or not enable direct port"
+	
+    else
+	sed -i 's/Listen/#Listen/g' /etc/apache2/conf.d/ssl.conf
+	sed -i 's/#Listen/Listen/g' /etc/apache2/httpd.conf
+	bashio::log.info "SSL not enable"
+fi
+
+if bashio::config.true "apache" && bashio::config.true "ssl"; then
+    echo "SSLProxyEngine on" >> /etc/apache2/httpd.conf || bashio::log.info ""
+    echo "SSLProxyVerify off" >> /etc/apache2/httpd.conf || bashio::log.info ""
+    echo "SSLProxyCheckPeerCN off" >> /etc/apache2/httpd.conf || bashio::log.info ""
+    echo "SSLProxyCheckPeerName off" >> /etc/apache2/httpd.conf || bashio::log.info ""
 	sed -i 's/Listen/#Listen/g' /etc/apache2/httpd.conf
-    echo "proxy_ssl_verify off;" >> /config/nginx/includes/server_params.conf || bashio::log.info ""
-	sed -i 's/http:\/\//https:\/\//g' /config/nginx/servers/ingress.conf || bashio::log.info ""
-	sed -i 's/http:\/\//https:\/\//g' /config/nginx/servers/direct.conf || bashio::log.info "error http prot direct.conf or not enable direct port"
-	echo "upstream backend {server 127.0.0.1:2443;}" > /config/nginx/includes/upstream.conf && bashio::log.info "Apache SSL install OK" || bashio::log.info ""
-    else
-	bashio::log.info "ssl not enable"
+	sed -i 's/#Listen/Listen/g' /etc/apache2/conf.d/ssl.conf
+	bashio::log.info "Set new backend NGINX -> Apache"
+	echo "upstream backend {server 127.0.0.1:2443;}" > /etc/nginx/includes/upstream.conf || bashio::log.info ""
+	cat /etc/nginx/includes/upstream.conf
+	bashio::log.info "Apache SSL install OK"
 fi
 
+echo '/usr/sbin/httpd' | sh && bashio::log.info "Apache2 before upstream start" || bashio::log.info "Apache2 started error"
 
-mkdir /config/apache/ && bashio::log.info "config/apache/ create ok..." || bashio::log.info "config/apache/ already exist"
+bashio::log.info "HA -> NGINX -> APACHE -> upstream"
 
-if  bashio::fs.file_exists '/config/apache/httpd.conf'; then
-    bashio::log.info "/config/apache/httpd.conf already exist"
 else
-	cp -ar /etc/apache2/*  /config/apache/ && bashio::log.info "restore config. apache"
+bashio::log.info "Apache2 before upstream not enable"
+bashio::log.info "HA -> NGINX -> upstream"
+
 fi
 
-cp -ar /config/apache/* /etc/apache2/
+if bashio::config.true "fix_resource_proxy_redirect"; then
+sed -i 's/proxy_redirect/#proxy_redirect/g' /etc/nginx/includes/proxy_params.conf
 
+cat << 'EOF' >> /etc/nginx/includes/proxy_params.conf
+#FIX RESOURCE ON HASSIO
+sub_filter  'src="/' 'src="./';
+sub_filter  'href="/' 'href="./' ;
+sub_filter  'action="/' 'action="./';
 
-echo '/usr/sbin/httpd' | sh && bashio::log.info "Apache2 started..." || bashio::log.info "Apache2 started error"
+sub_filter  'src=\'/' 'src=\'./';
+sub_filter  'href=\'/' 'href=\'./' ;
+sub_filter  'action=\'/' 'action=\'./';
 
-    else
-	rm -rf /config/apache && bashio::log.info "Apache2 in the middle not enable"  || bashio::log.info "Apache2 in the middle not enable" 
+sub_filter_once on;
+proxy_redirect $uri .$uri;
+EOF
+
+bashio::log.info "fix_resource_proxy_redirect enable"
+
 fi
 
-#####
+bashio::log.info "Starting NGinx..."
 
-
-cp -ar /config/nginx/* /etc/nginx/ && bashio::log.info "Update Nginx ok..." || bashio::log.info "Error Update Nginx ..."
-
-
-
-exec nginx && bashio::log.info "NGinx started..." || bashio::log.info "NGinx started error"
+exec nginx
