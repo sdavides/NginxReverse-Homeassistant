@@ -71,6 +71,7 @@ upstream_port=$(bashio::config 'upstream_port')
 
 bashio::log.info "Set Apache proxy upstream..."
 echo 'ProxyPassMatch    "^/(.*)$"' $upstream_http://$upstream_server:$upstream_port/'$1'  >> /etc/apache2/httpd.conf || bashio::log.info "apache2 error echo ProxyPassMatch"
+echo 'ProxyPassReverse     "^/(.*)$"' $upstream_http://$upstream_server:$upstream_port/'$1'  >> /etc/apache2/httpd.conf || bashio::log.info "apache2 error echo ProxyPassReverse"
 cat /etc/apache2/httpd.conf | grep ProxyPassMatch
 
 sed -i 's/ErrorLog/#ErrorLog/g' /etc/apache2/httpd.conf || bashio::log.info ""
