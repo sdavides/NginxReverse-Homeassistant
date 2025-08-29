@@ -1,0 +1,30 @@
+---
+configuration:
+  basic_authentication_username: 
+    name: basic_authentication_username
+    description: >-
+      basic_authentication_username upstream if required
+  basic_authentication_password: 
+    name: basic_authentication_password
+    description: >-
+      basic_authentication_password upstream if required
+  ssl: 
+    name: ssl
+    description: >-
+      Start Nginx with SSL (Include Apache)
+  leave_front_door_open: 
+    name: leave_front_door_open
+    description: >-
+      enable = homeassistant basic authentication not required on external port
+  upstream_http: 
+    name: upstream_http
+    description: >-
+      upstream http protocol
+  apache: 
+    name: apache
+    description: >-
+      Add Apache2 before upstream, try to resolve error load resource
+  fix_resource_proxy_redirect: 
+    name: fix_resource_proxy_redirect
+    description: >-
+      Try fix resource: proxy_redirect $uri .$uri
