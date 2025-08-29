@@ -1,10 +1,9 @@
 ---
 name: NginxReverse
-version: dev
+version: 1.0
 slug: nginx_reverse
-description: Nginx Server/Reverse proxy on HA
+description: Nginx Server/Reverse proxy on HomeAssistant
 url: https://github.com/sdavides/NginxReverse-Homeassistant
-codenotary: codenotary@frenck.dev
 ingress: true
 ingress_port: 0
 ingress_stream: true
@@ -17,7 +16,7 @@ arch:
 ports:
   80/tcp: 
 ports_description:
-  80/tcp: Nginx port ext
+  80/tcp: Nginx external port additional (direct port)
 hassio_api: true
 hassio_role: manager
 homeassistant_api: true
@@ -31,28 +30,26 @@ map:
   - share:rw
   - ssl
 options:
-  upstream_server: 
+  upstream_server: "192.168.1.1"
   upstream_port: "80"
   upstream_http: "http"
-  upstream_documentroot: ""
-  basic_authentication:
-    info: add login if backend require basic authentication
-    username: ""
-    password: ""
+  basic_authentication_username: ""
+  basic_authentication_password: ""
   ssl: false
   certfile: fullchain.pem
   keyfile: privkey.pem
+  leave_front_door_open: false
 schema:
   upstream_server: str
   upstream_port: str
   upstream_http: str
-  upstream_documentroot: str
-  basic_authentication:
-    username: str
-    password: str
-  ssl: bool
-  certfile: str
-  keyfile: str
+  basic_authentication_username: str?
+  basic_authentication_password: str?
+  upstream_http: list(http|https)?
+  ssl: bool?
+  certfile: str?
+  keyfile: str?
   leave_front_door_open: bool?
   apache: bool?
+  fix_resource_proxy_redirect: bool?
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
